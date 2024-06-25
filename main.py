@@ -1,5 +1,27 @@
-def huffman_coding():
-    pass
+def huffman_coding(counts):
+    ln = sum([val for _, val in counts.items()])
+
+    # tree node representation -> (val, left, right)
+    sort_forest = lambda f : sorted(f, key=lambda x: x[0][1])
+    forest = sort_forest([((key, val/ln), None, None) for key, val in counts.items()])
+    print(forest[:10])
+
+    print(len(forest))
+
+    iter_count = 0
+    while len(forest) > 1:
+        # 1. get two lowest prob trees and merge them
+        tree1, tree2 = forest[:2]
+
+        new_prob = tree1[0][1] + tree2[0][1]
+        new_tree = ((None, new_prob), tree1, tree2)
+
+        forest = [new_tree] + forest[2:]
+        forest = sort_forest(forest)
+        print(forest[:10])
+        print(len(forest))
+        iter_count += 1
+        if iter_count == 200: break
 
 filename = "enwik6"
 
@@ -30,3 +52,5 @@ entropy = -sum([log2(c/len(data))*(c/len(data)) for _, c in counts.items()])
 print(f"entropy = {entropy:.3f} bits")
 print(f"worst case entropy for {len(symbols)} symbols: {log2(len(symbols)):.3f} bits")
 print(f"optimal compression ratio: 8 / {entropy:.3f} = {8 / entropy:.2f}x")
+
+huffman_coding(counts)
