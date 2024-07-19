@@ -79,16 +79,18 @@ decoder = {code: s for s, code in encoded}
 for i in range(20):
     print(f"{i+1:2}: s={encoded[i][0]:3} chr={repr(chr(encoded[i][0])):3} code={encoded[i][1]}")
 
-encoded_data = ""
 
-for s in data:
-    encoded_data += encoder[s]
 
 # print(data[:100])
 # print data in binary
-# print(" ".join(f"{b:08b}" for b in data[:10]))
-# print(encoded_data)
+print(" ".join(f"{b:08b}" for b in data[:10]))
 
+# for s in data[:10]: encoded_data += encoder[s]
 
+def r(str): return ''.join(reversed(list(str)))
 
+encoded_data = " ".join([r(f"{r(encoder[s]):8}") for s in data[:10]])
+# encoded_data = " ".join([(f"{encoder[s]:8}") for s in data[:10]])
+# encoded_data = [(f"{encoder[s]:8}") for s in data[:10]]
+print(encoded_data)
 
