@@ -58,13 +58,10 @@ print(f"optimal compression ratio (for byte level compression): 8 / {entropy:.3f
 
 tree = huffman_coding(counts)
 
-# print(tree)
-
 encoded = []
 
 def dfs(tree, path):
     if tree[1] is None and tree[2] is None:
-        # print(f"Symbol: {tree[0][0]} Path: {path}")
         encoded.append((tree[0][0],path))
     else:
         dfs(tree[1], path + "0")
@@ -76,21 +73,60 @@ encoded = sorted(encoded, key=lambda x: len(x[1]))
 encoder = {s: code for s, code in encoded}
 decoder = {code: s for s, code in encoded}
 
+def decode_char(data):
+    curr = tree
+    res = ""
+
+    for bit in data:
+        if bit == "0":
+            curr = curr[1]
+            res += "0"
+        else:
+            curr = curr[2]
+            res += "1"
+        if curr[1] is None and curr[2] is None:
+            return res
+
+def decode_data(data):
+    cum = ""
+    offset = 0
+    while True:
+        res = decode_char(encoded_raw[offset:])
+        if res is None: break
+        offset += len(res)
+        cum += chr(decoder[res])
+    return cum
+
+
+
 for i in range(20):
     print(f"{i+1:2}: s={encoded[i][0]:3} chr={repr(chr(encoded[i][0])):3} code={encoded[i][1]}")
 
-
-
-# print(data[:100])
 # print data in binary
 print(" ".join(f"{b:08b}" for b in data[:10]))
-
-# for s in data[:10]: encoded_data += encoder[s]
 
 def r(str): return ''.join(reversed(list(str)))
 
 encoded_data = " ".join([r(f"{r(encoder[s]):8}") for s in data[:10]])
-# encoded_data = " ".join([(f"{encoder[s]:8}") for s in data[:10]])
-# encoded_data = [(f"{encoder[s]:8}") for s in data[:10]]
 print(encoded_data)
+
+print(encoder[ord('a')])
+
+subset = data[:100000]
+
+print("Original: ")
+# print(subset.decode("ascii"))
+
+print("Encoded raw: ")
+
+encoded_raw = ''.join([encoder[s] for s in subset])
+print(encoded_raw)
+
+cum = decode_data(subset)
+print(cum)
+
+print(f"original_size={len(subset)} bytes")
+print(f"encoded_size={len(encoded_raw)/8} bytes")
+
+
 
